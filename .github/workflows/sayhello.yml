@@ -16,26 +16,3 @@ jobs:
         run: |
           echo "Hello World"
         shell: bash
-
-      - name: Echo GitHub Context
-        run: |
-          echo "GitHub Context"
-          echo $GITHUB_SHA
-          echo $GITHUB_REF
-          echo $GITHUB_REPOSITORY
-          echo $GITHUB_RUN_ID
-          echo $GITHUB_RUN_NUMBER
-          echo $GITHUB_WORKFLOW
-          echo $GITHUB_ACTION
-          echo $GITHUB_ACTOR
-          echo $GITHUB_EVENT_NAME
-          echo $GITHUB_EVENT_PATH
-        env:
-          GITHUB_SHA: ${{ github.sha }}
-          GITHUB_REF: ${{ github.ref }}
-          GITHUB_WORKSPACE: ${{ github.workspace }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_ACTOR: ${{ github.actor }}
-          GITHUB_EVENT_NAME: ${{ github.event.name }}
-          GITHUB_EVENT_PATH: ${{ github.event.path }}
-        shell: bash

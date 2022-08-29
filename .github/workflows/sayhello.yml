@@ -1,0 +1,91 @@
+name: CloudBolt VM Update Password
+
+on:
+  workflow_dispatch:
+    inputs:
+      cloudboltenvironment:
+        type: string
+        required: true
+        description: CloudBolt Environment
+      subscription-id:
+        type: string
+        required: true
+        description: Subscription ID
+      user:
+        type: string
+        required: true
+        description: User
+      rgname:
+        type: string
+        required: true
+        description: Resource Group Name
+      servername:
+        type: string
+        required: true
+        description: Server Name
+      password:
+        type: string
+        required: true
+        description: Password
+
+permissions: read-all
+
+concurrency:
+  group: '${{ github.workflow }}'
+  cancel-in-progress: false
+
+jobs:
+  production:
+    if: ${{ github.event.inputs.cloudboltenvironment == 'production' }}
+    runs-on: [self-hosted, prod]
+    steps:
+      - name: Checkout self
+        uses: actions/checkout@v3
+
+      - name: Checkout github composites actions
+        uses: actions/checkout@v3
+        with:
+          repository: Maersk-Global/cct-github-composites
+          token: '${{ secrets.PERSONAL_ACCESS_TOKEN }}'
+          path: ./.github/actions/cct-github-composites
+
+      - uses: ./.github/actions/cct-github-composites/az_login
+        with:
+          service-principal: '${{ secrets.CLIENT_ID_PROD }}'
+          service-principal-password: '${{ secrets.CLIENT_SECRET_PROD }}'
+          tenant-id: '${{ secrets.TENANT_ID }}'
+          subscription-id: '${{ secrets.SUBSCRIPTION_ID_PROD }}'
+
+      - uses: ./.github/actions/cb_update_password
+        with:
+          user: ${{ github.event.inputs.user }}
+          password: ${{ github.event.inputs.password }}
+          rgname: ${{ github.event.inputs.rgname }}
+          servername: ${{ github.event.inputs.servername }}
+          subscription-id: ${{ github.event.inputs.subscription-id }}
+
+  test:
+    if: ${{ github.event.inputs.cloudboltenvironment == 'test' }}
+    runs-on: [self-hosted, sandbox]
+    steps:
+      - name: Checkout github composites actions
+        uses: actions/checkout@v3
+        with:
+          repository: Maersk-Global/cct-github-composites
+          token: '${{ secrets.PERSONAL_ACCESS_TOKEN }}'
+          path: ./.github/actions/cct-github-composites
+
+      - uses: ./.github/actions/cct-github-composites/az_login
+        with:
+          service-principal: '${{ secrets.CLIENT_ID_SANDBOX }}'
+          service-principal-password: '${{ secrets.CLIENT_SECRET_SANDBOX }}'
+          tenant-id: '${{ secrets.TENANT_ID }}'
+          subscription-id: '${{ secrets.SUBSCRIPTION_ID_SANDBOX }}'
+
+      - uses: ./.github/actions/cb_update_password
+        with:
+          user: ${{ github.event.inputs.user }}
+          password: ${{ github.event.inputs.password }}
+          rgname: ${{ github.event.inputs.rgname }}
+          servername: ${{ github.event.inputs.servername }}
+          subscription-id: ${{ github.event.inputs.subscription-id }}

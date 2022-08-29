@@ -1,3 +1,5 @@
+name: Docker Hello World Private Repo
+
 on:
   workflow_dispatch:
     inputs:

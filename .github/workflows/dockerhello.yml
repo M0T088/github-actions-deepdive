@@ -1,3 +1,5 @@
+name: Docker Hello World Public Action
+
 on: [push]
 
 jobs:
